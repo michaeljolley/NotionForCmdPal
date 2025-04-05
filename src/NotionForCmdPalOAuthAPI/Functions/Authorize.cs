@@ -16,7 +16,7 @@ public class Authorize
     }
 
     [Function("Authorize")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
         _logger.LogInformation("Authorize function processed a request.");
         var codeUrl = await OAuthClient.CreateOAuthCodeRequestUriAsync();
