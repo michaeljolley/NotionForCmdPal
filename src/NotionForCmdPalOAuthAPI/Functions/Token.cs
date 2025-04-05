@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NotionForCmdPalOAuthAPI.Authentication;
+using System.Web;
 
 namespace NotionForCmdPalOAuthAPI.Functions;
 
@@ -20,6 +21,6 @@ public class Token
   public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
   {
     _logger.LogInformation("Token function processed a request.");
-    return await OAuthClient.HandleOAuthRedirection(new Uri(req.GetEncodedUrl()));
+    return await OAuthClient.HandleOAuthRedirection(new Uri(req.GetDisplayUrl()));
   }
 }
