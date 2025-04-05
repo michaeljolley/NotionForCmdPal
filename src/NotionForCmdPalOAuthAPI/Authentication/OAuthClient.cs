@@ -74,16 +74,17 @@ internal sealed class OAuthClient
       var responseMessage = await client.SendAsync(request);
       responseMessage.EnsureSuccessStatusCode();
 
-      var responseContent = await responseMessage.Content.ReadAsStringAsync();
-      var responseJson = JsonDocument.Parse(responseContent);
+      var responseContent = await responseMessage.Content.ReadFromJsonAsync<OAuthResponse>();
 
-      var accessToken = responseJson.RootElement.GetProperty("access_token").GetString();
-      var botId = responseJson.RootElement.GetProperty("bot_id").GetString();
+      if (!responseContent!.IsSuccess) 
+      {
+        return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
+      }
 
-      Debug.WriteLine($"Access Token: {accessToken}");
-      Debug.WriteLine($"Bot Id: {botId}");
+      Debug.WriteLine($"Access Token: {responseContent.AccessToken}");
+      Debug.WriteLine($"Bot Id: {responseContent.BotId}");
 
-      var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={accessToken}&bot_id={botId}";
+      var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
       return new ContentResult() { Content = responseUrl };
     }
     catch (HttpRequestException ex)
