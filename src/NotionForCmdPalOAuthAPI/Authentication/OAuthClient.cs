@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Web;
 
 namespace NotionForCmdPalOAuthAPI.Authentication;
 
@@ -14,7 +9,7 @@ internal sealed class OAuthClient
     var notionOAuthUrl = await SecretsManager.GetSecretAsync("NotionOAuthUrl");
     var notionClientId = await SecretsManager.GetSecretAsync("NotionOAuthUrl");
     var functionUrl = await SecretsManager.GetSecretAsync("FunctionUrl");
-    var redirectUrl = $"{functionUrl}/token";
+    var redirectUrl = HttpUtility.HtmlEncode($"{functionUrl}/api/token");
 
     return new Uri($"{notionOAuthUrl.Value}/authorize?client_id={notionClientId.Value}&response_type=code&owner=user&redirect_uri={redirectUrl}");
   }
