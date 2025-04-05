@@ -16,7 +16,7 @@ public class Token
     }
 
     [Function("Token")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
         _logger.LogInformation("Token function processed a request.");
         return new RedirectResult("cmdpalnotionext://oauth_redirect_uri/");

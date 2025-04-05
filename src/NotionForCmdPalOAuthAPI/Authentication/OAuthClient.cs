@@ -7,7 +7,7 @@ internal sealed class OAuthClient
   internal static async Task<Uri> CreateOAuthCodeRequestUriAsync()
   {
     var notionOAuthUrl = await SecretsManager.GetSecretAsync("NotionOAuthUrl");
-    var notionClientId = await SecretsManager.GetSecretAsync("NotionOAuthUrl");
+    var notionClientId = await SecretsManager.GetSecretAsync("NotionClientId");
     var functionUrl = await SecretsManager.GetSecretAsync("FunctionUrl");
     var redirectUrl = HttpUtility.HtmlEncode($"{functionUrl}/api/token");
 
