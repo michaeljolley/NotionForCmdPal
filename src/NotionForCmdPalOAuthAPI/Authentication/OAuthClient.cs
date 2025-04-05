@@ -85,7 +85,7 @@ internal sealed class OAuthClient
       Debug.WriteLine($"Bot Id: {responseContent.BotId}");
 
       var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
-      return new ContentResult() { Content = responseUrl };
+      return new RedirectResult(responseUrl);
     }
     catch (HttpRequestException ex)
     {
