@@ -21,6 +21,7 @@ public class Token
   public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
   {
     _logger.LogInformation("Token function processed a request.");
-    return await OAuthClient.HandleOAuthRedirection(new Uri(req.GetDisplayUrl()));
+    return new ContentResult() { Content = req.GetDisplayUrl() };
+    //return await OAuthClient.HandleOAuthRedirection(new Uri(req.GetDisplayUrl()));
   }
 }
