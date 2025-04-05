@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Web;
@@ -20,7 +23,7 @@ internal sealed class OAuthClient
 
   public static async Task<IActionResult> HandleOAuthRedirection(Uri response)
   {
-    var errorResult = new ContentResult() { StatusCode = 500, ContentType = "plain/text", Content = "There was a problem authenticating with Notion. Please try again later." };
+    var errorResult = new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = "There was a problem authenticating with Notion. Please try again later." };
 
     var queryString = response.Query;
     var queryStringCollection = HttpUtility.ParseQueryString(queryString);
@@ -53,19 +56,15 @@ internal sealed class OAuthClient
     var notionAuthSecret = Encoding.UTF8.GetBytes($"{notionClientId.Value}:{notionClientSecret.Value}");
     var notionBase64Auth = Convert.ToBase64String(notionAuthSecret);
 
+    var oauthToken = new OAuthToken(code!, redirectUrl);
+
     var request = new HttpRequestMessage(HttpMethod.Post, tokenUri)
     {
-      Content =
-        new FormUrlEncodedContent(new[]
-        {
-          new KeyValuePair<string, string>("grant_type", "authorization_code"),
-          new KeyValuePair<string, string>("code", code!),
-          new KeyValuePair<string, string>("client_id", notionClientId.Value),
-          new KeyValuePair<string, string>("redirect_uri", redirectUrl),
-        }),
+      Content = new StringContent(JsonSerializer.Serialize(oauthToken), Encoding.UTF8, "application/json")
     };
 
-    request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
     request.Content.Headers.Add("Notion-Version", "2022-06-28");
     request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", notionBase64Auth);
 
