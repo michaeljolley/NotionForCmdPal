@@ -8,18 +8,18 @@ namespace NotionForCmdPalOAuthAPI.Functions;
 
 public class Authorize
 {
-    private readonly ILogger<Authorize> _logger;
+  private readonly ILogger<Authorize> _logger;
 
-    public Authorize(ILogger<Authorize> logger)
-    {
-        _logger = logger;
-    }
+  public Authorize(ILogger<Authorize> logger)
+  {
+    _logger = logger;
+  }
 
-    [Function("Authorize")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
-    {
-        _logger.LogInformation("Authorize function processed a request.");
-        var codeUrl = await OAuthClient.CreateOAuthCodeRequestUriAsync();
-        return new RedirectResult(codeUrl.ToString(), true);
-    }
+  [Function("Authorize")]
+  public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+  {
+    _logger.LogInformation("Authorize function processed a request.");
+    var codeUrl = await OAuthClient.CreateOAuthCodeRequestUriAsync();
+    return new RedirectResult(codeUrl.ToString());
+  }
 }
