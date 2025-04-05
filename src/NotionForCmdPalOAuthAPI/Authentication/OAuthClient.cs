@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Web;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NotionForCmdPalOAuthAPI.Authentication;
 
@@ -24,7 +23,7 @@ internal sealed class OAuthClient
     var errorResult = new ContentResult() { StatusCode = 500, ContentType = "plain/text", Content = "There was a problem authenticating with Notion. Please try again later." };
 
     var queryString = response.Query;
-    var queryStringCollection = System.Web.HttpUtility.ParseQueryString(queryString);
+    var queryStringCollection = HttpUtility.ParseQueryString(queryString);
 
     if (queryStringCollection["error"] != null)
     {
@@ -49,7 +48,7 @@ internal sealed class OAuthClient
     var notionClientSecret = await SecretsManager.GetSecretAsync("NotionClientSecret");
     var functionUrl = await SecretsManager.GetSecretAsync("FunctionUrl");
     var redirectUrl = HttpUtility.HtmlEncode($"{functionUrl.Value}/api/token");
-    var tokenUri = new Uri($"{notionOAuthUrl}/token");
+    var tokenUri = new Uri($"{notionOAuthUrl.Value}/token");
 
     var notionAuthSecret = Encoding.UTF8.GetBytes($"{notionClientId.Value}{notionClientSecret.Value}");
     var notionBase64Auth = Convert.ToBase64String(notionAuthSecret);
