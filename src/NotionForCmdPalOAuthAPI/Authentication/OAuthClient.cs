@@ -50,7 +50,7 @@ internal sealed class OAuthClient
     var redirectUrl = HttpUtility.HtmlEncode($"{functionUrl.Value}/api/token");
     var tokenUri = new Uri($"{notionOAuthUrl.Value}/token");
 
-    var notionAuthSecret = Encoding.UTF8.GetBytes($"{notionClientId.Value}{notionClientSecret.Value}");
+    var notionAuthSecret = Encoding.UTF8.GetBytes($"{notionClientId.Value}:{notionClientSecret.Value}");
     var notionBase64Auth = Convert.ToBase64String(notionAuthSecret);
 
     var request = new HttpRequestMessage(HttpMethod.Post, tokenUri)
@@ -67,10 +67,7 @@ internal sealed class OAuthClient
 
     request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
     request.Content.Headers.Add("Notion-Version", "2022-06-28");
-    request.Content.Headers.Add("Authorization", $"Basic {notionBase64Auth}");
-
-    Debug.WriteLine($"Request: {request.RequestUri}");
-    Debug.WriteLine($"Content: {await request.Content.ReadAsStringAsync()}");
+    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", notionBase64Auth);
 
     using var client = new HttpClient();
     try
