@@ -9,7 +9,7 @@ internal sealed class OAuthClient
     var notionOAuthUrl = await SecretsManager.GetSecretAsync("NotionOAuthUrl");
     var notionClientId = await SecretsManager.GetSecretAsync("NotionClientId");
     var functionUrl = await SecretsManager.GetSecretAsync("FunctionUrl");
-    var redirectUrl = HttpUtility.HtmlEncode($"{functionUrl}/api/token");
+    var redirectUrl = HttpUtility.HtmlEncode($"{functionUrl.Value}/api/token");
 
     return new Uri($"{notionOAuthUrl.Value}/authorize?client_id={notionClientId.Value}&response_type=code&owner=user&redirect_uri={redirectUrl}");
   }
