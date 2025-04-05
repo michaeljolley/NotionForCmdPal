@@ -19,24 +19,19 @@ public sealed class TokenService
 
   public bool IsLoggedIn()
   {
-    var accessToken = _credentialVault.GetCredentials("MyAnimeList")?.Password;
+    var accessToken = _credentialVault.GetCredentials("NotionToken")?.Password;
     return !string.IsNullOrEmpty(accessToken);
   }
 
   public string GetAccessToken()
   {
-    var accessToken = _credentialVault.GetCredentials("MyAnimeList")?.Password;
+    var accessToken = _credentialVault.GetCredentials("NotionToken")?.Password;
     return accessToken!;
   }
 
   public void SaveOrOverwriteAccessToken(string accessToken)
   {
-    _credentialVault.SaveCredentials("MyAnimeList", new NetworkCredential(string.Empty, accessToken).SecurePassword);
-  }
-
-  public void SaveOrOverwriteRefreshToken(string refreshToken)
-  {
-    _credentialVault.SaveCredentials("MyAnimeListRefresh", new NetworkCredential(string.Empty, refreshToken).SecurePassword);
+    _credentialVault.SaveCredentials("NotionToken", new NetworkCredential(string.Empty, accessToken).SecurePassword);
   }
 
   public void StartLoginUser()
@@ -51,27 +46,14 @@ public sealed class TokenService
     LoginStateChanged?.Invoke(this, false);
   }
 
-  public void StartRefreshAccessToken()
-  {
-    var refreshToken = _credentialVault.GetCredentials("MyAnimeListRefresh")?.Password;
-    if (refreshToken == null)
-    {
-      throw new InvalidOperationException("No refresh token found");
-    }
-
-    _oAuthClient.AccessTokenChanged += OAuthTokenEventHandler;
-  //  _ = _oAuthClient.RefreshAccessToken(refreshToken);
-  }
-
   public void OAuthTokenEventHandler(object? sender, OAuthEventArgs e)
   {
-    if (e.Error != null)
+    if (string.IsNullOrEmpty(e.AccessToken))
     {
-      throw e.Error;
+      throw new Exception("No credentials found.");
     }
 
     SaveOrOverwriteAccessToken(e.AccessToken!);
-    //SaveOrOverwriteRefreshToken(e.RefreshToken!);
     LoginStateChanged?.Invoke(this, true);
   }
 }

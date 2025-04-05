@@ -16,6 +16,8 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
 
 		<Nullable>enable</Nullable>
+
+		<Platforms>ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
