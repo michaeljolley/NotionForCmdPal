@@ -21,7 +21,13 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Build
+      - name: Build API
+        working-directory: NotionForCmdPalOAuthAPI
+        run: |
+          dotnet build --configuration Release
+          
+      - name: Build Extension
+        working-directory: CmdPalNotionExtension
         run: |
           dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=x64
           dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=arm64

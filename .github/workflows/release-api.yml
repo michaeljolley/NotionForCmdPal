@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './src/NotionForCmdPalOAuthAPI'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'NotionForCmdPalOAuthAPI'
   DOTNET_VERSION: '8'
 
 jobs:
