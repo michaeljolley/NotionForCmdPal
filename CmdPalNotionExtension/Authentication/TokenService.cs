@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 
 namespace CmdPalNotionExtension.Authentication;
 
-public sealed class TokenService
+internal sealed class TokenService
 {
+  private static readonly Lock _oAuthRequestsLock = new();
   private readonly ICredentialVault _credentialVault;
 
   private readonly OAuthClient _oAuthClient;
@@ -36,8 +39,20 @@ public sealed class TokenService
 
   public void StartSignInUser()
   {
-    _oAuthClient.AccessTokenChanged += OAuthTokenEventHandler;
-    OAuthClient.BeginOAuthRequest();
+
+    lock (_oAuthRequestsLock)
+    {
+      try
+      {
+        _oAuthClient.BeginOAuthRequest();
+        return _oAuthClient;
+      }
+      catch (Exception ex)
+      {
+        _log.Error(ex, $"Unable to complete OAuth request: ");
+      }
+      _oAuthClient.AccessTokenChanged += OAuthTokenEventHandler;
+      _oAuthClient.BeginOAuthRequest();
   }
 
   public void SignOutUser()
