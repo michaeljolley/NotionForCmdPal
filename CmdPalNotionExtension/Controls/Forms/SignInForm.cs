@@ -72,7 +72,7 @@ public partial class SignInForm : FormContent, INotionForm
       {
         var signInSucceeded = HandleSignIn().Result;
         LoadingStateChanged?.Invoke(this, false);
-        _authenticationMediator.SignIn(new SignInStatusChangedEventArgs(signInSucceeded, null));
+        _tokenService.StartSignInUser();
         FormSubmitted?.Invoke(this, new FormSubmitEventArgs(signInSucceeded, null));
       }
       catch (Exception ex)
