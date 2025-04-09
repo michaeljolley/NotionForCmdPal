@@ -36,6 +36,27 @@ jobs:
           $xml.Package.Identity.Version = $version
           $xml.Save($xmlFilePath)
           Write-Output "Version updated to $version in $xmlFilePath"
+          
+      - name: Update OAuth secrets
+        working-directory: ${{ env.project }}
+        env: 
+          ClientId: ${{ secrets.NOTION_CLIENT_ID }}
+          ClientSecret: ${{ secrets.NOTION_CLIENT_SECRET }}
+        run: |
+          $OAuthConfigFilePath = "\Configuration\OAuthConfiguration.cs"
+          if (![string]::IsNullOrWhitespace($env.ClientId)) {
+              (Get-Content $OAuthConfigFilePath).Replace("%BUILD_TIME_NOTION_CLIENT_ID_PLACEHOLDER%", $env.ClientId) | Set-Content $OAuthConfigFilePath
+          }
+          else {
+              Write-Host "ClientId not found at Build-time"
+          }
+          
+          if (![string]::IsNullOrWhitespace($env.ClientSecret)) {
+              (Get-Content $OAuthConfigFilePath).Replace("%BUILD_TIME_NOTION_CLIENT_SECRET_PLACEHOLDER%", $env.ClientSecret) | Set-Content $OAuthConfigFilePath
+          }
+          else {
+              Write-Host "ClientSecret not found at Build-time"
+          }
               
       - name: Build
         working-directory: ${{ env.project }}
