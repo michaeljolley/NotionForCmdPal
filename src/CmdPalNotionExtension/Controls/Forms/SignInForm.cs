@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.CommandPalette.Extensions;
@@ -11,7 +10,7 @@ using CmdPalNotionExtension.Helpers;
 
 namespace CmdPalNotionExtension.Controls.Forms;
 
-public partial class SignInForm : FormContent, INotionForm
+internal partial class SignInForm : FormContent, INotionForm
 {
   public event EventHandler<bool>? LoadingStateChanged;
 
@@ -41,7 +40,6 @@ public partial class SignInForm : FormContent, INotionForm
   {
     SetButtonEnabled(!isSignedIn);
     LoadingStateChanged?.Invoke(this, false);
-    _tokenService.StartSignInUser();
     FormSubmitted?.Invoke(this, new FormSubmitEventArgs(false, null));
   }
 
@@ -70,30 +68,18 @@ public partial class SignInForm : FormContent, INotionForm
     {
       try
       {
-        var signInSucceeded = HandleSignIn().Result;
         LoadingStateChanged?.Invoke(this, false);
         _tokenService.StartSignInUser();
-        FormSubmitted?.Invoke(this, new FormSubmitEventArgs(signInSucceeded, null));
+        SetButtonEnabled(false);
+        FormSubmitted?.Invoke(this, new FormSubmitEventArgs(true, null));
       }
       catch (Exception ex)
       {
         LoadingStateChanged?.Invoke(this, false);
         SetButtonEnabled(true);
-        _authenticationMediator.SignIn(new SignInStatusChangedEventArgs(false, ex));
         FormSubmitted?.Invoke(this, new FormSubmitEventArgs(false, ex));
       }
     });
     return CommandResult.KeepOpen();
-  }
-
-  private async Task<bool> HandleSignIn()
-  {
-    var numPreviousDevIds = _tokenService.GetLoggedInDeveloperIdsInternal().Count();
-
-    await _tokenService.LoginNewDeveloperIdAsync();
-
-    var numDevIds = _tokenService.GetLoggedInDeveloperIdsInternal().Count();
-
-    return numDevIds > numPreviousDevIds;
   }
 }

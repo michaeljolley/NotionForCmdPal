@@ -20,7 +20,7 @@
           "type": "Image",
           "url": "{{AuthIcon}}",
           "horizontalAlignment": "center",
-          "size": "large"
+          "size": "medium"
         },
         {
           "type": "ColumnSet",
@@ -40,7 +40,7 @@
                       "title": "{{AuthButtonTitle}}",
                       "tooltip": "{{AuthButtonTooltip}}",
                       "type": "Action.Submit",
-                      "isEnabled": {{"ButtonIsEnabled"}}
+                      "isEnabled": {{ButtonIsEnabled}}
                     }
                   ]
                 }

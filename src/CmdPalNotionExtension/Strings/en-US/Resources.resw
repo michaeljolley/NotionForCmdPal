@@ -156,10 +156,6 @@
     <value>Sign out of your Notion account</value>
     <comment></comment>
   </data>
-  <data name="Forms_Sign_In" xml:space="preserve">
-    <value>Sign in to Notion</value>
-    <comment></comment>
-  </data>
 	<data name="Forms_Sign_In_Tooltip" xml:space="preserve">
     <value>Sign in to your Notion account</value>
     <comment></comment>

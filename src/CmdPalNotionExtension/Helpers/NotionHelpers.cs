@@ -8,7 +8,7 @@ internal sealed class NotionHelper
 {
   internal static IconInfo Icon => IconHelpers.FromRelativePath("Assets\\Square88x88Logo.png");
 
-  public static string LogoWithBackplatePath { get; } = Path.Combine(AppContext.BaseDirectory, "Assets", "Square300x300Logo.png");
+  public static string LogoWithBackplatePath { get; } = Path.Combine(AppContext.BaseDirectory, "Assets", "Square88x88Logo.png");
 
   internal const string BaseExtensionId = "com.baldbeardedbuilder.cmdpal.notion";
   

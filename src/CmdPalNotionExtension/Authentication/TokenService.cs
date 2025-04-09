@@ -7,7 +7,6 @@ namespace CmdPalNotionExtension.Authentication;
 
 internal sealed class TokenService
 {
-  private static readonly Lock _oAuthRequestsLock = new();
   private readonly ICredentialVault _credentialVault;
 
   private readonly OAuthClient _oAuthClient;
@@ -18,6 +17,7 @@ internal sealed class TokenService
   {
     _credentialVault = credentialVault;
     _oAuthClient = oAuthClient;
+    _oAuthClient.AccessTokenChanged += OAuthTokenEventHandler;
   }
 
   public bool IsSignedIn()
@@ -39,20 +39,7 @@ internal sealed class TokenService
 
   public void StartSignInUser()
   {
-
-    lock (_oAuthRequestsLock)
-    {
-      try
-      {
-        _oAuthClient.BeginOAuthRequest();
-        return _oAuthClient;
-      }
-      catch (Exception ex)
-      {
-        _log.Error(ex, $"Unable to complete OAuth request: ");
-      }
-      _oAuthClient.AccessTokenChanged += OAuthTokenEventHandler;
-      _oAuthClient.BeginOAuthRequest();
+    _oAuthClient.BeginOAuthRequest();
   }
 
   public void SignOutUser()

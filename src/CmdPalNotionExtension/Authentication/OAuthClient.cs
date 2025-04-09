@@ -1,49 +1,30 @@
-﻿using CmdPalNotionExtension.Configuration;
-using CmdPalNotionExtension.Notion.Models;
-using Microsoft.Security.Authentication.OAuth;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http;
-using System.Security;
 using System.Text.Json;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Net.Http.Json;
 
+using CmdPalNotionExtension.Configuration;
+
 namespace CmdPalNotionExtension.Authentication;
 
-internal sealed class OAuthClient : IDisposable
+internal sealed class OAuthClient
 {
   public event EventHandler<OAuthEventArgs>? AccessTokenChanged;
-
   private const string apiAuthUrl = "https://api.notion.com/v1/oauth";
-
-  private readonly SemaphoreSlim _oAuthCompleted;
-
-  internal OAuthClient()
-  {
-    _oAuthCompleted = new(0);
-    State = string.Empty;
-  }
-
-  internal string State { get; private set; }
-
-  internal SecureString? AccessToken { get; private set; }
 
   internal DateTime StartTime
   {
     get; private set;
   }
 
-  public void AwaitCompletion() => _oAuthCompleted?.Wait();
-
   private static Uri CreateOauthRequestUri()
   {
-    return new Uri($"{apiAuthUrl}authorize?client_id={OAuthConfiguration.GetClientId()}&response_type=code&owner=user&redirect_uri={OAuthConfiguration.RedirectUri}");
+    return new Uri($"{apiAuthUrl}/authorize?client_id={OAuthConfiguration.GetClientId()}&response_type=code&owner=user&redirect_uri={OAuthConfiguration.RedirectUri}");
   }
 
   public void BeginOAuthRequest()
@@ -101,16 +82,12 @@ internal sealed class OAuthClient : IDisposable
       }
 
       var token = await tokenTask;
-      AccessToken = new NetworkCredential(string.Empty, token.AccessToken).SecurePassword;
+      AccessTokenChanged?.Invoke(null, new OAuthEventArgs(token.AccessToken, token.BotId));
     }
     catch (Exception ex)
     {
       throw new InvalidOperationException(ex.Message);
     }
-
-    _oAuthCompleted.Release();
-
-    AccessTokenChanged?.Invoke(null, new OAuthEventArgs(accessToken, botId));
   }
 
   private static async Task<OAuthResponse> OAuthTokenRequest(string code)
@@ -161,17 +138,4 @@ internal sealed class OAuthClient : IDisposable
     }
   }
 
-  private void Dispose(bool disposing)
-  {
-    if (disposing)
-    {
-      _oAuthCompleted.Dispose();
-    }
-  }
-
-  public void Dispose()
-  {
-    Dispose(true);
-    GC.SuppressFinalize(this);
-  }
 }

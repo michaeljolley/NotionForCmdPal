@@ -41,7 +41,7 @@ internal partial class CmdPalNotionExtensionCommandsProvider : CommandProvider
   }
 
   private void UpdateTopLevelCommands() => RaiseItemsChanged(0);
- 
+
   private void OnSignInStatusChanged(object? sender, bool isSignedIn)
   {
     _ = UpdateSignInStatus(isSignedIn);
@@ -69,16 +69,15 @@ internal partial class CmdPalNotionExtensionCommandsProvider : CommandProvider
     }
 
     var commands = new List<CommandItem>
-        {
-            new(_signOutPage)
-            {
-                Title = _resources.GetResource("ExtensionTitle"),
-                Subtitle = _resources.GetResource("Forms_Sign_Out_Button_Title"),
-                Icon = NotionHelper.Icon
-            },
-        };
+    {
+      new(_signOutPage)
+      {
+        Title = _resources.GetResource("ExtensionTitle"),
+        Subtitle = _resources.GetResource("Forms_Sign_Out_Button_Title"),
+        Icon = NotionHelper.Icon
+      },
+    };
 
     return commands.ToArray();
   }
-
 }

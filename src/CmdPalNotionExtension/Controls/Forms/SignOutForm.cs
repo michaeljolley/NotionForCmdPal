@@ -8,7 +8,7 @@ using CmdPalNotionExtension.Helpers;
 
 namespace CmdPalNotionExtension.Controls.Forms;
 
-public partial class SignOutForm : FormContent, INotionForm
+internal partial class SignOutForm : FormContent, INotionForm
 {
   public event EventHandler<bool>? LoadingStateChanged;
 

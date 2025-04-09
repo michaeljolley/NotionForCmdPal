@@ -11,7 +11,7 @@ internal sealed partial class NotionPageListItem : ListItem
 
   public NotionPageListItem(NotionPage notionPage, ICommand command) : base(command)
   {
-    Title = notionPage.Properties["Name"].title.plain_text;
+    Title = "";
     //Tags = anime.Genres.Select(genre => new Tag
     //{
     //  Text = genre,
