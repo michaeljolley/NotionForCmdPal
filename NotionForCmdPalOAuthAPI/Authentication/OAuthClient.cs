@@ -110,10 +110,10 @@ internal sealed class OAuthClient
 
   private static string successMessage = @"
     <!DOCTYPE html>
-    <html lang=""en"">
+    <html lang='en'>
     <head>
-        <meta charset=""UTF-8"">
-        <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>Successfully Signed in to Notion</title>
         <style>
             html, body {
@@ -139,8 +139,8 @@ internal sealed class OAuthClient
     <body>
         <h1>You are now logged in!</h1>
         <p>You can now close this window and reopen Command Palette to access your Notion account.</p>
-        <script type=""text/javascript"">
-            window.location.href = ""{0}"";
+        <script type='text/javascript'>
+            window.location.href = '{0}';
         </script>
     </body>
     </html>";
