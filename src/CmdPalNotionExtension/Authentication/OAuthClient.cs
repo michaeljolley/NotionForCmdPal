@@ -8,7 +8,7 @@ namespace CmdPalNotionExtension.Authentication;
 internal sealed class OAuthClient
 {
   public event EventHandler<OAuthEventArgs>? AccessTokenChanged;
-  private const string apiAuthUrl = "https://notionforcmdpaloauthapi-abctftdfe2cacufe.southcentralus-01.azurewebsites.net/api/authorize";
+  private const string apiAuthUrl = "https://baldbeardedbuilder.com/api/notion/authorize/";
 
   internal DateTime StartTime
   {
@@ -50,7 +50,7 @@ internal sealed class OAuthClient
     if (queryStringCollection["error"] != null)
     {
       // Handle error
-      throw new InvalidOperationException($"Error: {queryStringCollection["error"]}");
+      throw new InvalidOperationException($"Error: {queryStringCollection["error"]} {queryStringCollection["error_description"]}");
     }
 
     if (queryStringCollection["access_token"] == null)
@@ -60,8 +60,7 @@ internal sealed class OAuthClient
 
     // Handle success
     var accessToken = queryStringCollection["access_token"];
-    var botId = queryStringCollection["bot_id"];
 
-    AccessTokenChanged?.Invoke(null, new OAuthEventArgs(accessToken, botId));
+    AccessTokenChanged?.Invoke(null, new OAuthEventArgs(accessToken));
   }
 }

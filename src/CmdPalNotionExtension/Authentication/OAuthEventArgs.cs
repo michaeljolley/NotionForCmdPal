@@ -6,11 +6,8 @@ public sealed class OAuthEventArgs : EventArgs
 {
   public string? AccessToken { get; }
 
-  public string? BotId { get; }
-
-  public OAuthEventArgs(string? token, string? botId)
+  public OAuthEventArgs(string? token)
   {
     AccessToken = token;
-    BotId = botId;
   }
 }

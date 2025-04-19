@@ -27,7 +27,7 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Update Version in manifest
-        working-directory: ${{ env.project }}
+        working-directory: src/${{ env.project }}
         run: |
           $version = "${{github.ref_name}}.0" -replace '^${{ env.tag_prefix }}', ''
           
@@ -38,7 +38,7 @@ jobs:
           Write-Output "Version updated to $version in $xmlFilePath"
               
       - name: Build
-        working-directory: ${{ env.project }}
+        working-directory: src/${{ env.project }}
         run: |
           dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=x64
           dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=arm64
