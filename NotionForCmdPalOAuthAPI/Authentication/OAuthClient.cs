@@ -92,15 +92,17 @@ internal sealed class OAuthClient
     catch (HttpRequestException ex)
     {
       Debug.WriteLine($"Request failed: {ex.Message}");
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Request failed: There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
     }
     catch (JsonException ex)
     {
       Debug.WriteLine($"JSON parsing failed: {ex.Message}");
-      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"JSON parsing failed: There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
     }
     catch (Exception ex)
     {
       Debug.WriteLine($"Unexpected error: {ex.Message}");
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Unexpected error: There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
     }
 
     return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later." };
