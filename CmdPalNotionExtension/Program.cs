@@ -102,7 +102,7 @@ public class Program
 
     var signInForm = new SignInForm(tokenService, resources);
     var signOutForm = new SignOutForm(tokenService, resources);
-    var signInPage = new SignInPage(signInForm, new StatusMessage(), resources.GetResource("Message_Sign_In_Success"), resources.GetResource("Message_Sign_In_Fail"));
+    var signInPage = new SignInPage(signInForm, new StatusMessage(), resources.GetResource("Message_Sign_In_Begin"), resources.GetResource("Message_Sign_In_Fail"));
     var signOutPage = new SignOutPage(signOutForm, new StatusMessage(), resources.GetResource("Message_Sign_Out_Success"), resources.GetResource("Message_Sign_Out_Fail"));
 
     var commandFactory = new CommandFactory(dataProvider);

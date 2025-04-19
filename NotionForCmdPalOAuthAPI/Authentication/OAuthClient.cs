@@ -65,15 +65,15 @@ internal sealed class OAuthClient
     request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
     request.Content.Headers.Add("Notion-Version", "2022-06-28");
     request.Headers.Authorization = new AuthenticationHeaderValue("Basic", notionBase64Auth);
-    var x = "";
+
     using var client = new HttpClient();
     try
     {
       var responseMessage = await client.SendAsync(request);
       responseMessage.EnsureSuccessStatusCode();
 
-      x = await responseMessage.Content.ReadAsStringAsync();
-      var responseContent = await responseMessage.Content.ReadFromJsonAsync<OAuthResponse>();
+      var responseJson = await responseMessage.Content.ReadAsStringAsync();
+      var responseContent = JsonSerializer.Deserialize<OAuthResponse>(responseJson);
 
       if (!responseContent!.IsSuccess)
       {
@@ -92,17 +92,17 @@ internal sealed class OAuthClient
     catch (HttpRequestException ex)
     {
       Debug.WriteLine($"Request failed: {ex.Message}");
-      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Request failed: There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Request failed: There was a problem authenticating with Notion. Please try again later. }\n\n{ex.Message}" };
     }
     catch (JsonException ex)
     {
       Debug.WriteLine($"JSON parsing failed: {ex.Message}");
-      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"JSON parsing failed: There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"JSON parsing failed: There was a problem authenticating with Notion. Please try again later. \n\n{ex.Message}" };
     }
     catch (Exception ex)
     {
       Debug.WriteLine($"Unexpected error: {ex.Message}");
-      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Unexpected error: There was a problem authenticating with Notion. Please try again later. \n\n{x}\n\n{ex.Message}" };
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Unexpected error: There was a problem authenticating with Notion. Please try again later. \n\n{ex.Message}" };
     }
 
     return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later." };
