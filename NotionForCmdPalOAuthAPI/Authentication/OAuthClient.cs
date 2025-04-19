@@ -71,21 +71,28 @@ internal sealed class OAuthClient
       responseMessage.EnsureSuccessStatusCode();
 
       var responseJson = await responseMessage.Content.ReadAsStringAsync();
-      var responseContent = JsonSerializer.Deserialize<OAuthResponse>(responseJson);
-
-      if (!responseContent!.IsSuccess)
-      {
-        return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseMessage.StatusCode}\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
-      }
-
-      var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
 
       return new ContentResult()
       {
-        Content = String.Format(successMessage, responseUrl),
-        ContentType = "text/html",
-        StatusCode = 200
+        StatusCode = 200,
+        ContentType = "application/json",
+        Content = responseJson
       };
+      //var responseContent = JsonSerializer.Deserialize<OAuthResponse>(responseJson);
+
+      //if (!responseContent!.IsSuccess)
+      //{
+      //  return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseMessage.StatusCode}\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
+      //}
+
+      //var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
+
+      //return new ContentResult()
+      //{
+      //  Content = String.Format(successMessage, responseUrl),
+      //  ContentType = "text/html",
+      //  StatusCode = 200
+      //};
     }
     catch (HttpRequestException ex)
     {
