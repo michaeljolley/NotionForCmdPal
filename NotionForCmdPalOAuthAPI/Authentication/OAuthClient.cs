@@ -23,7 +23,7 @@ internal sealed class OAuthClient
 
   public static async Task<IActionResult> HandleOAuthRedirection(Uri response)
   {
-    var errorResult = new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = "There was a problem authenticating with Notion. Please try again later." };
+    var errorResult = new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = "There was a problem authenticating with Notion. Please try again later. {0}" };
 
     var queryString = response.Query;
     var queryStringCollection = HttpUtility.ParseQueryString(queryString);
@@ -32,12 +32,14 @@ internal sealed class OAuthClient
     {
       // Handle error
       Debug.WriteLine($"Error: {queryStringCollection["error"]}");
+      errorResult.Content = string.Format(errorResult.Content, queryStringCollection["error"]);
       return errorResult;
     }
 
     if (queryStringCollection["code"] == null)
     {
       Debug.WriteLine("No code found in the response.");
+      errorResult.Content = string.Format(errorResult.Content, "Code was not found.");
       return errorResult;
     }
 

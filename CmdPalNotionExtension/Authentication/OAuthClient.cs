@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Net.Http.Json;
-
-using CmdPalNotionExtension.Configuration;
 
 namespace CmdPalNotionExtension.Authentication;
 
 internal sealed class OAuthClient
 {
   public event EventHandler<OAuthEventArgs>? AccessTokenChanged;
-  private const string apiAuthUrl = "https://api.notion.com/v1/oauth";
+  private const string apiAuthUrl = "https://notionforcmdpaloauthapi-abctftdfe2cacufe.southcentralus-01.azurewebsites.net/api/authorize";
 
   internal DateTime StartTime
   {
@@ -24,7 +17,7 @@ internal sealed class OAuthClient
 
   private static Uri CreateOauthRequestUri()
   {
-    return new Uri($"{apiAuthUrl}/authorize?client_id={OAuthConfiguration.GetClientId()}&response_type=code&owner=user&redirect_uri={OAuthConfiguration.RedirectUri}");
+    return new Uri(apiAuthUrl);
   }
 
   public void BeginOAuthRequest()
@@ -49,93 +42,26 @@ internal sealed class OAuthClient
     });
   }
 
-  public async Task HandleOAuthRedirection(Uri authorizationResponse)
-  { 
-    // Gets URI from navigation parameters.
-    var queryString = authorizationResponse.Query;
-
-    // Parse the query string variables into a NameValueCollection.
+  public void HandleOAuthRedirection(Uri response)
+  {
+    var queryString = response.Query;
     var queryStringCollection = HttpUtility.ParseQueryString(queryString);
 
-    if (!string.IsNullOrEmpty(queryStringCollection.Get("error")))
+    if (queryStringCollection["error"] != null)
     {
-      throw new UriFormatException($"OAuth authorization error: {queryStringCollection.Get("error")}");
+      // Handle error
+      throw new InvalidOperationException($"Error: {queryStringCollection["error"]}");
     }
 
-    if (string.IsNullOrEmpty(queryStringCollection.Get("code")))
+    if (queryStringCollection["access_token"] == null)
     {
-      throw new UriFormatException($"Malformed authorization response: {queryString}");
+      throw new InvalidOperationException("No token found in the response.");
     }
 
-    // Gets the Authorization code
-    var code = queryStringCollection.Get("code");
-    try
-    {
-      var tokenTask = OAuthTokenRequest(code);
-      var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+    // Handle success
+    var accessToken = queryStringCollection["access_token"];
+    var botId = queryStringCollection["bot_id"];
 
-      var completedTask = await Task.WhenAny(tokenTask, timeoutTask);
-
-      if (completedTask == timeoutTask)
-      {
-        throw new InvalidOperationException("Authorization code exchange timed out.");
-      }
-
-      var token = await tokenTask;
-      AccessTokenChanged?.Invoke(null, new OAuthEventArgs(token.AccessToken, token.BotId));
-    }
-    catch (Exception ex)
-    {
-      throw new InvalidOperationException(ex.Message);
-    }
+    AccessTokenChanged?.Invoke(null, new OAuthEventArgs(accessToken, botId));
   }
-
-  private static async Task<OAuthResponse> OAuthTokenRequest(string code)
-  {
-    var tokenUri = new Uri($"{apiAuthUrl}/token");
-
-    var notionAuthSecret = Encoding.UTF8.GetBytes($"{OAuthConfiguration.GetClientId()}:{OAuthConfiguration.GetClientSecret()}");
-    var notionBase64Auth = Convert.ToBase64String(notionAuthSecret);
-
-    var oauthToken = new OAuthToken(code!, OAuthConfiguration.RedirectUri);
-
-    var request = new HttpRequestMessage(HttpMethod.Post, tokenUri)
-    {
-      Content = new StringContent(JsonSerializer.Serialize(oauthToken), Encoding.UTF8, "application/json")
-    };
-
-    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-    request.Content.Headers.Add("Notion-Version", "2022-06-28");
-    request.Headers.Authorization = new AuthenticationHeaderValue("Basic", notionBase64Auth);
-
-    using var client = new HttpClient();
-    try
-    {
-      var responseMessage = await client.SendAsync(request);
-      responseMessage.EnsureSuccessStatusCode();
-
-      var responseContent = await responseMessage.Content.ReadFromJsonAsync<OAuthResponse>();
-
-      if (!responseContent!.IsSuccess)
-      {
-        throw new InvalidOperationException("There was a problem authenticating with Notion.");
-      }
-
-      return responseContent;
-    }
-    catch (HttpRequestException ex)
-    {
-      throw new InvalidOperationException($"Request failed: {ex.Message}");
-    }
-    catch (JsonException ex)
-    {
-      throw new InvalidOperationException($"JSON parsing failed: {ex.Message}");
-    }
-    catch (Exception ex)
-    {
-      throw new InvalidOperationException($"Unexpected error: {ex.Message}");
-    }
-  }
-
 }
