@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Web;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NotionForCmdPalOAuthAPI.Authentication;
@@ -92,7 +90,7 @@ internal sealed class OAuthClient
     catch (HttpRequestException ex)
     {
       Debug.WriteLine($"Request failed: {ex.Message}");
-      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Request failed: There was a problem authenticating with Notion. Please try again later. }\n\n{ex.Message}" };
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"Request failed: There was a problem authenticating with Notion. Please try again later. \n\n{ex.Message}" };
     }
     catch (JsonException ex)
     {
