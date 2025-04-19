@@ -8,13 +8,13 @@ internal sealed partial record Query
   public string? SearchFor { get; init; }
   
   [JsonPropertyName("sort")]
-  public object? Sort { get; init; }
+  public static object? Sort { get => new { direction = NotionSortDirection.DESC, timestamp = "last_edited_time" }; }
 
   [JsonPropertyName("filter")]
-  public static object? Filter { get => new { direction = NotionSortDirection.DESC, timestamp = "last_edited_time" }; }
+  public object? Filter { get; init; }
 
   [JsonPropertyName("start_cursor")]
-  public object? Cursor { get; set; }
+  public string? Cursor { get; set; }
 
   [JsonPropertyName("page_size")]
   public object? PageSize { get; set; }

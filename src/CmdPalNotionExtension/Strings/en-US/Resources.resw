@@ -153,4 +153,10 @@
   <data name="Forms_Sign_In_Tooltip" xml:space="preserve">
     <value>Sign in to your Notion account</value>
   </data>
+  <data name="Pages_Recent_Pages_Title" xml:space="preserve">
+    <value>Recent Pages</value>
+  </data>
+  <data name="Pages_Recent_Pages_SubTitle" xml:space="preserve">
+    <value>List of recently edited pages</value>
+  </data>
 </root>

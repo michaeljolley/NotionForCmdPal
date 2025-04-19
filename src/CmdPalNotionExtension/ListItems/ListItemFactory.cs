@@ -61,5 +61,4 @@ internal sealed partial class ListItemFactory
     //contentPage.Commands = pageCommands.ToArray();
     
   }
-
 }

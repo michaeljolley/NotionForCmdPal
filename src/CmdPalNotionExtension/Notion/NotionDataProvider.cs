@@ -20,7 +20,8 @@ internal sealed partial class NotionDataProvider
   private readonly JsonSerializerOptions _jsonSerializerOptions = new() 
   { 
     WriteIndented = true, 
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull 
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    AllowOutOfOrderMetadataProperties = true
   };
 
   public NotionDataProvider(TokenService tokenService)
@@ -66,9 +67,15 @@ internal sealed partial class NotionDataProvider
     }
   }
 
-  public async Task<List<NotionPage>> GetRecentNotionPagesAsync()
+  public async Task<SearchResult> GetRecentNotionPagesAsync(string? cursor)
   {
     var query = new Query() { PageSize = 20 };
+
+    if (!string.IsNullOrEmpty(cursor))
+    {
+      query.Cursor = cursor;
+    }
+
     var payload = JsonSerializer.Serialize(query, _jsonSerializerOptions);
 
     var request = new HttpRequestMessage(HttpMethod.Post, "/v1/search")
@@ -77,6 +84,6 @@ internal sealed partial class NotionDataProvider
     };
 
     var response = await SendAsync<SearchResult>(request);
-    return response.Results;
+    return response;
   }
 }

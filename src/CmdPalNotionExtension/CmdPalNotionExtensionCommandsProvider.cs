@@ -14,6 +14,7 @@ internal partial class CmdPalNotionExtensionCommandsProvider : CommandProvider
   private readonly TokenService _tokenService;
   private readonly SignInPage _signInPage;
   private readonly SignOutPage _signOutPage;
+  private readonly RecentPagesPage _recentPagesPage;
   private readonly Resources _resources;
   private bool _isSignedIn;
 
@@ -28,6 +29,7 @@ internal partial class CmdPalNotionExtensionCommandsProvider : CommandProvider
     _tokenService = tokenService;
     _signInPage = signInPage;
     _signOutPage = signOutPage;
+    _recentPagesPage = recentPagesPage;
 
     DisplayName = _resources.GetResource("ExtensionTitle");
     Icon = NotionHelper.Icon;
@@ -76,6 +78,7 @@ internal partial class CmdPalNotionExtensionCommandsProvider : CommandProvider
         Subtitle = _resources.GetResource("Forms_Sign_Out_Button_Title"),
         Icon = NotionHelper.Icon
       },
+      _recentPagesPage.ToCommandItem()
     };
 
     return commands.ToArray();
