@@ -20,11 +20,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
-
-      - name: Build API
-        working-directory: NotionForCmdPalOAuthAPI
-        run: |
-          dotnet build --configuration Release
           
       - name: Build Extension
         working-directory: CmdPalNotionExtension

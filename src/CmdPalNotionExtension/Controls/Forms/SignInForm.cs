@@ -80,6 +80,7 @@ internal partial class SignInForm : FormContent, INotionForm
         FormSubmitted?.Invoke(this, new FormSubmitEventArgs(false, ex));
       }
     });
-    return CommandResult.KeepOpen();
+    // Dismiss here so the user will see other available commands once logged in.
+    return CommandResult.Dismiss();
   }
 }
