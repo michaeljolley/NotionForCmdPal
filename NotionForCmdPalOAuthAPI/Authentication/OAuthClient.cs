@@ -23,8 +23,6 @@ internal sealed class OAuthClient
 
   public static async Task<IActionResult> HandleOAuthRedirection(Uri response)
   {
-    var errorResult = new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = "There was a problem authenticating with Notion. Please try again later. {0}" };
-
     var queryString = response.Query;
     var queryStringCollection = HttpUtility.ParseQueryString(queryString);
 
@@ -32,15 +30,13 @@ internal sealed class OAuthClient
     {
       // Handle error
       Debug.WriteLine($"Error: {queryStringCollection["error"]}");
-      errorResult.Content = string.Format(errorResult.Content, queryStringCollection["error"]);
-      return errorResult;
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later. {queryStringCollection["error"]}" };
     }
 
     if (queryStringCollection["code"] == null)
     {
       Debug.WriteLine("No code found in the response.");
-      errorResult.Content = string.Format(errorResult.Content, "Code was not found.");
-      return errorResult;
+      return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later. No code found in the response." };
     }
 
     // Handle success
@@ -80,7 +76,7 @@ internal sealed class OAuthClient
 
       if (!responseContent!.IsSuccess)
       {
-        return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
+        return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseMessage.StatusCode}\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
       }
 
       var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
