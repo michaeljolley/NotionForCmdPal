@@ -101,7 +101,7 @@ internal sealed class OAuthClient
       Debug.WriteLine($"Unexpected error: {ex.Message}");
     }
 
-    return errorResult;
+    return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later." };
   }
 
   private static string successMessage = @"
