@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Web;
@@ -70,29 +71,24 @@ internal sealed class OAuthClient
       var responseMessage = await client.SendAsync(request);
       responseMessage.EnsureSuccessStatusCode();
 
-      var responseJson = await responseMessage.Content.ReadAsStringAsync();
+      var responseContent = await responseMessage.Content.ReadFromJsonAsync<OAuthResponse>(new JsonSerializerOptions()
+      {
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+      });
+
+      if (!responseContent!.IsSuccess)
+      {
+        return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseMessage.StatusCode}\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
+      }
+
+      var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
 
       return new ContentResult()
       {
-        StatusCode = 200,
-        ContentType = "application/json",
-        Content = responseJson
+        Content = String.Format(successMessage, responseUrl),
+        ContentType = "text/html",
+        StatusCode = 200
       };
-      //var responseContent = JsonSerializer.Deserialize<OAuthResponse>(responseJson);
-
-      //if (!responseContent!.IsSuccess)
-      //{
-      //  return new ContentResult() { StatusCode = 500, ContentType = "text/plain", Content = $"There was a problem authenticating with Notion. Please try again later.\n\n{responseMessage.StatusCode}\n{responseContent.Error}\n{responseContent.ErrorDescription}" };
-      //}
-
-      //var responseUrl = $"cmdpalnotionext://oauth_redirect_uri/?access_token={responseContent.AccessToken}&bot_id={responseContent.BotId}";
-
-      //return new ContentResult()
-      //{
-      //  Content = String.Format(successMessage, responseUrl),
-      //  ContentType = "text/html",
-      //  StatusCode = 200
-      //};
     }
     catch (HttpRequestException ex)
     {
