@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -58,7 +57,7 @@ internal sealed partial class NotionDataProvider
 
       response.EnsureSuccessStatusCode();
 
-      return await response.Content.ReadFromJsonAsync<T>();
+      return await response.Content.ReadFromJsonAsync<T>(_jsonSerializerOptions);
     }
     catch (Exception ex)
     {

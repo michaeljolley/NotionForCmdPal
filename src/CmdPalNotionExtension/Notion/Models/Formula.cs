@@ -23,7 +23,7 @@ internal sealed record StringFormula(
 ) : Formula;
 
 internal sealed record DateFormula(
-  [property: JsonPropertyName("date")] DateTime? Date
+  [property: JsonPropertyName("date")] DateType? Date
 ) : Formula;
 
 internal sealed record BooleanFormula(
