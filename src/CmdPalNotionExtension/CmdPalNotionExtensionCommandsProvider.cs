@@ -14,13 +14,13 @@ internal partial class CmdPalNotionExtensionCommandsProvider : CommandProvider
   private readonly TokenService _tokenService;
   private readonly SignInPage _signInPage;
   private readonly SignOutPage _signOutPage;
-  private readonly RecentPagesPage _recentPagesPage;
+  private readonly RecentPage _recentPagesPage;
   private readonly Resources _resources;
   private bool _isSignedIn;
 
   public CmdPalNotionExtensionCommandsProvider(
         TokenService tokenService,
-        RecentPagesPage recentPagesPage,
+        RecentPage recentPagesPage,
         Resources resources,
         SignInPage signInPage,
         SignOutPage signOutPage)

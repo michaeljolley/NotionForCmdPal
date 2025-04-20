@@ -5,13 +5,13 @@ namespace CmdPalNotionExtension.Notion;
 internal sealed partial record Query
 {
   [JsonPropertyName("query")]
-  public string? SearchFor { get; init; }
+  public string? SearchFor { get; set; }
   
   [JsonPropertyName("sort")]
   public static object? Sort { get => new { direction = NotionSortDirection.DESC, timestamp = "last_edited_time" }; }
 
   [JsonPropertyName("filter")]
-  public object? Filter { get; init; }
+  public object? Filter { get; set; }
 
   [JsonPropertyName("start_cursor")]
   public string? Cursor { get; set; }

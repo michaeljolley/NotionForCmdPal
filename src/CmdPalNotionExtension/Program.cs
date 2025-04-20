@@ -108,7 +108,7 @@ public class Program
     var commandFactory = new CommandFactory(dataProvider);
     var listItemFactory = new ListItemFactory(commandFactory, tokenService, dataProvider);
 
-    var recentPagesPage = new RecentPagesPage(dataProvider, listItemFactory, resources);
+    var recentPagesPage = new RecentPage(dataProvider, listItemFactory, resources);
 
     var commandProvider = new CmdPalNotionExtensionCommandsProvider(
         tokenService, recentPagesPage, resources, signInPage, signOutPage);

@@ -66,13 +66,17 @@ internal sealed partial class NotionDataProvider
     }
   }
 
-  public async Task<SearchResult> GetRecentNotionPagesAsync(string? cursor)
+  public async Task<SearchResult> GetRecentNotionPagesAsync(string? searchFor, string? cursor)
   {
     var query = new Query() { PageSize = 20 };
 
     if (!string.IsNullOrEmpty(cursor))
     {
       query.Cursor = cursor;
+    }
+    if (!string.IsNullOrEmpty(searchFor))
+    {
+      query.SearchFor = searchFor;
     }
 
     var payload = JsonSerializer.Serialize(query, _jsonSerializerOptions);
